@@ -3,116 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthCare Chatbot</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>AI Health Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+            background: #f0f2f5;
+        }
+
+        .sidebar {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-right: 1px solid #e1e4e8;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar h2 {
+            color: #1a73e8;
+            font-size: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e1e4e8;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #202124;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .health-tips ul {
+            list-style: none;
+        }
+
+        .health-tips li {
+            color: #5f6368;
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .health-tips li::before {
+            content: "•";
+            color: #1a73e8;
+            position: absolute;
+            left: 0;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .chat-header {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e1e4e8;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-header h1 {
+            font-size: 1.25rem;
+            color: #202124;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 1rem;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .bot-message {
+            background: #ffffff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-message {
+            background: #1a73e8;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-input {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            border-top: 1px solid #e1e4e8;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input input:focus {
+            border-color: #1a73e8;
+        }
+
+        .chat-input button {
+            padding: 0.75rem 1.5rem;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .chat-input button:hover {
+            background: #1557b0;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: #34a853;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2>TechSophy BOT</h2>
-        <div class="sidebar-content">
-            <p>Welcome to our AI-powered healthcare assistant. Feel free to ask any health-related questions or describe your symptoms.</p>
+    <aside class="sidebar">
+        <h2>TechSophy Health Assistant</h2>
+        
+        <div class="feature-card">
+            <h3>About</h3>
+            <p>Your personal AI-powered healthcare assistant. Ask questions about symptoms, get health advice, and schedule appointments.</p>
         </div>
-        <div class="health-tips">
-            <h3>Quick Health Tips</h3>
+
+        <div class="feature-card health-tips">
+            <h3>Daily Health Tips</h3>
             <ul>
-                <li>Stay hydrated</li>
-                <li>Get enough sleep</li>
-                <li>Exercise regularly</li>
-                <li>Eat a balanced diet</li>
+                <li>Stay hydrated (8 glasses/day)</li>
+                <li>7-9 hours of sleep daily</li>
+                <li>30 minutes exercise</li>
+                <li>5 servings of fruits & veggies</li>
+                <li>Regular health check-ups</li>
             </ul>
         </div>
-    </div>
-    <div class="chat-container">
-        <div class="chat-header">
-            Chat with HealthCare Bot
+
+        <div class="feature-card">
+            <h3>Emergency Contacts</h3>
+            <p>Health Center: 123-456-7890</p>
+            <p>Emergency: 911</p>
         </div>
+    </aside>
+
+    <main class="main-container">
+        <header class="chat-header">
+            <div class="status-indicator"></div>
+            <h1>Chat with Health Assistant</h1>
+        </header>
+
         <div class="chat-messages" id="chatMessages">
             <div class="message bot-message">
-                Hello! I'm your healthcare assistant. How can I help you today?
+                Hello! I'm your AI health assistant. What's your name?
             </div>
         </div>
+
         <div class="chat-input">
-            <input type="text" id="userInput" placeholder="Type your message here...">
+            <input type="text" id="userInput" placeholder="Type your message..." autocomplete="off">
             <button id="sendButton">Send</button>
         </div>
-    </div>
+    </main>
 
     <script>
         $(document).ready(function() {
-            let sessionId = Date.now().toString();
-    
+            const sessionId = Date.now().toString();
+            
             function addMessage(message, isUser) {
-                const messageDiv = $('<div>').addClass('message').text(message);
-                if (isUser) {
-                    messageDiv.addClass('user-message');
-                } else {
-                    messageDiv.addClass('bot-message');
-                }
+                const messageDiv = $('<div>')
+                    .addClass('message')
+                    .addClass(isUser ? 'user-message' : 'bot-message')
+                    .text(message);
+                
                 $('#chatMessages').append(messageDiv);
                 $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
             }
-    
-            function sendMessage(message) {
+
+            function processMessage(message) {
                 $.ajax({
                     url: '/chatbot',
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ message: message, session_id: sessionId }),
+                    data: JSON.stringify({
+                        message: message,
+                        session_id: sessionId
+                    }),
                     success: function(response) {
                         addMessage(response.response, false);
-    
-                        if (response.response.includes("Are you currently at Ganpat University campus?")) {
-                            addMessage("If yes, would you like to book an appointment at the Guni Health Clinic? (Yes/No)", false);
+                        
+                        if (response.appointment_prompt) {
+                            setTimeout(() => {
+                                addMessage("Would you like to schedule an appointment? (Yes/No)", false);
+                            }, 1000);
                         }
                     },
-                    error: function(xhr, status, error) {
-                        addMessage("Error: " + error, false);
+                    error: function(error) {
+                        addMessage("I apologize, but I'm having trouble connecting. Please try again.", false);
                     }
                 });
             }
-    
-            function bookAppointment(time) {
+
+            function handleAppointment(time) {
                 $.ajax({
                     url: '/book_appointment',
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ 
+                    data: JSON.stringify({
                         session_id: sessionId,
                         preferred_time: time
                     }),
                     success: function(response) {
                         addMessage(response.response, false);
-                        if (response.response.includes("Would you like to book this slot?")) {
-                            addMessage("Please respond with 'Yes' to confirm the suggested slot, or provide another time.", false);
-                        }
                     },
-                    error: function(xhr, status, error) {
-                        addMessage("Error booking appointment: " + error, false);
+                    error: function(error) {
+                        addMessage("Sorry, there was an error booking your appointment. Please try again.", false);
                     }
                 });
             }
-    
-            // Initial message
-            addMessage("Hello! I'm your healthcare assistant. What should I call you?", false);
-    
+
             $('#sendButton').click(function() {
                 const userInput = $('#userInput').val().trim();
-                if (userInput === '') return;
-    
+                if (!userInput) return;
+
                 addMessage(userInput, true);
                 $('#userInput').val('');
-    
-                if (userInput.toLowerCase() === 'yes' && $('#chatMessages').text().includes("would you like to book an appointment")) {
-                    addMessage("Great! Please provide a preferred time for your appointment (HH:MM):", false);
+
+                if (userInput.toLowerCase() === 'yes' && $('#chatMessages').text().includes("schedule an appointment")) {
+                    addMessage("Please provide your preferred time (HH:MM):", false);
                 } else if (userInput.match(/^\d{2}:\d{2}$/)) {
-                    bookAppointment(userInput);
+                    handleAppointment(userInput);
                 } else {
-                    sendMessage(userInput);
+                    processMessage(userInput);
                 }
             });
-    
+
             $('#userInput').keypress(function(e) {
                 if (e.which == 13) {
                     $('#sendButton').click();
